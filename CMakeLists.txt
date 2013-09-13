@@ -29,5 +29,5 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(youbot_client src/control.cpp src/slider.cpp src/youbot.cpp src/client.cpp)
+rosbuild_add_executable(youbot_client src/control.cpp src/slider.cpp src/button.cpp src/youbot.cpp src/client.cpp)
 target_link_libraries(youbot_client dfv sfml-graphics sfml-window sfml-system sfml-network sfml-audio)

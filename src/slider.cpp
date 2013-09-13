@@ -24,7 +24,7 @@ void Slider::Draw(sf::RenderWindow& window) const
                                         this->position.y, 
                                         this->position.x + this->size.x, 
                                         this->position.y + this->size.y,
-                                        sf::Color(255, 255, 255), 
+                                        sf::Color(220, 220, 220), 
                                         1.f, sf::Color(0, 0, 0));
     window.Draw(sh);
     

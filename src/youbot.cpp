@@ -12,7 +12,8 @@ const dfv::Vector3 Youbot::r[] = {dfv::Vector3(-0.034f, 0.f, 0.075f),
 Youbot::Youbot(ros::NodeHandle& node_handle_, 
                std::string arm_topic_name_, 
                std::string gripper_topic_name):
-    node_handle(node_handle_)
+    node_handle(node_handle_),
+    gripper_state(closed)
 {
     this->arm_publisher = 
         this->node_handle.advertise<brics_actuator::JointPositions>(arm_topic_name_, 1);
@@ -122,3 +123,34 @@ void Youbot::PublishMessage(bool publish_gripper)
         this->gripper_publisher.publish(gripper_msg);         
     }
 }
+
+void Youbot::OpenGripper()
+{
+    if (this->gripper_state == closed)
+    {
+        brics_actuator::JointPositions gripper_msg;
+        v_gripper_values[0].value = 0.02f;
+        v_gripper_values[1].value = 0.02f;    
+        gripper_msg.positions = v_gripper_values;
+        
+        this->gripper_publisher.publish(gripper_msg); 
+        this->gripper_state = open;
+    }
+}
+
+void Youbot::CloseGripper()
+{
+    if (this->gripper_state == open)
+    {
+        brics_actuator::JointPositions gripper_msg;
+        v_gripper_values[0].value = 0.001f;
+        v_gripper_values[1].value = 0.001f;    
+        gripper_msg.positions = v_gripper_values;
+        
+        this->gripper_publisher.publish(gripper_msg);
+        this->gripper_state = closed;
+    }
+}
+
+
+

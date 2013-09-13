@@ -33,11 +33,20 @@ class Youbot
         dfv::Quaternion GetJointLocalQuaternion(int index) const;
         dfv::Vector3 GetJointPosition(int index) const;
         
+        void OpenGripper();
+        void CloseGripper();
+        
         static const float joint_min_pos[];
         static const float joint_max_pos[];
         static const float joint_ini_pos[];
         
         static const dfv::Vector3 r[];
+        
+        enum GripperState
+        {
+            closed = 0,
+            open
+        };
         
     private:
         ros::NodeHandle& node_handle;
@@ -46,6 +55,8 @@ class Youbot
         
         std::vector<brics_actuator::JointValue> v_joint_values;
         std::vector<brics_actuator::JointValue> v_gripper_values;
+        
+        GripperState gripper_state;
 };
 
 #endif
