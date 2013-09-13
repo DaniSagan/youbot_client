@@ -129,8 +129,8 @@ void Youbot::OpenGripper()
     if (this->gripper_state == closed)
     {
         brics_actuator::JointPositions gripper_msg;
-        v_gripper_values[0].value = 0.02f;
-        v_gripper_values[1].value = 0.02f;    
+        v_gripper_values[0].value = 0.01f;
+        v_gripper_values[1].value = 0.01f;    
         gripper_msg.positions = v_gripper_values;
         
         this->gripper_publisher.publish(gripper_msg); 
