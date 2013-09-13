@@ -8,18 +8,18 @@
 
 int main(int argc, char** argv)
 {
-    const unsigned int HEIGHT = 480;
-    const unsigned int WIDTH = HEIGHT * 16 / 9;
     const std::string NAME = "YouBot_Client";
     
-    float joint_min_pos[] = {0.0100692, 0.0100692, -5.02655, 0.0221239, 0.110619};
-    float joint_max_pos[] = {5.84014, 2.61799, -0.015708, 3.4292, 5.64159};
-    
+    // ROS initialization
     ros::init(argc, argv, NAME);
     ros::NodeHandle node_handle;
     
+    // YouBot object
     Youbot youbot(node_handle);
     
+    // Window
+    const unsigned int HEIGHT = 480;
+    const unsigned int WIDTH = HEIGHT * 16 / 9;
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), NAME);
     window.SetFramerateLimit(30);
     
@@ -28,23 +28,32 @@ int main(int argc, char** argv)
     for (unsigned int i = 0; i < 5; i++)
     {
         sliders[i].SetSize(sf::Vector2i(200, 25));
-        sliders[i].SetPosition(sf::Vector2i(100, 100 + 50 * i));
+        sliders[i].SetPosition(sf::Vector2i(50, 50 + 50 * i));
         sliders[i].SetMinValue(Youbot::joint_min_pos[i]);
         sliders[i].SetMaxValue(Youbot::joint_max_pos[i]);
         sliders[i].SetCurrentValue(Youbot::joint_ini_pos[i]);
     }
     
     std::vector<sf::String> str_pos(5);
+    std::vector<sf::String> str_joint_pos(5);
     
     for (unsigned int i = 0; i < 5; i++)
     {
-        str_pos[i].SetPosition(sf::Vector2f(320, 100 + 50 * i));
+        str_pos[i].SetPosition(sf::Vector2f(270, 50 + 50 * i));
         str_pos[i].SetSize(20.f);
         str_pos[i].SetColor(sf::Color::Black);
+        
+        str_joint_pos[i].SetPosition(sf::Vector2f(50, 300 + 25 * i));
+        str_joint_pos[i].SetSize(16.f);
+        str_joint_pos[i].SetColor(sf::Color::Black);
     }
     
+    while(!node_handle.ok());
+    
+    // Main loop    
     while (window.IsOpened() && node_handle.ok())
     {
+        // Event handling
         sf::Event event;
         while (window.GetEvent(event))
         {
@@ -60,6 +69,7 @@ int main(int argc, char** argv)
             }            
         }
         
+        // Window display
         std::stringstream ss;
         for (unsigned int i = 0; i < 5; i++)
         {
@@ -68,6 +78,10 @@ int main(int argc, char** argv)
             str_pos[i].SetText(ss.str());
             
             youbot.joint_positions[i] = sliders[i].GetCurrentValue();
+            
+            ss.str(std::string(""));
+            ss << "A" << i + 1 << " POS: " << youbot.GetJointPosition(i + 1);
+            str_joint_pos[i].SetText(ss.str());
         }
         
         window.Clear(sf::Color(200, 200, 200));
@@ -75,6 +89,7 @@ int main(int argc, char** argv)
         {
             sliders[i].Draw(window);
             window.Draw(str_pos[i]);
+            window.Draw(str_joint_pos[i]);
         }
         
         window.Display();

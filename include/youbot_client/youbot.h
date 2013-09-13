@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <ros/ros.h>
 #include <brics_actuator/JointPositions.h>
+#include <dfv/dfv.h>
 
 class Youbot
 {
@@ -29,9 +30,14 @@ class Youbot
         double gripper_positions[2];
         void PublishMessage(bool publish_gripper = false);
         
+        dfv::Quaternion GetJointLocalQuaternion(int index) const;
+        dfv::Vector3 GetJointPosition(int index) const;
+        
         static const float joint_min_pos[];
         static const float joint_max_pos[];
         static const float joint_ini_pos[];
+        
+        static const dfv::Vector3 r[];
         
     private:
         ros::NodeHandle& node_handle;

@@ -3,6 +3,11 @@
 const float Youbot::joint_min_pos[] = {0.0100692f, 0.0100692f, -5.02655f, 0.0221239f, 0.110619f};
 const float Youbot::joint_max_pos[] = {5.84014f, 2.61799f, -0.015708f, 3.4292f, 5.64159f};
 const float Youbot::joint_ini_pos[] = {2.959675f, 1.144533f, -2.57124f, 1.811086f, 2.91237f};
+const dfv::Vector3 Youbot::r[] = {dfv::Vector3(-0.034f, 0.f, 0.075f), 
+                                  dfv::Vector3(0.f, 0.f, 0.155f),
+                                  dfv::Vector3(0.f, 0.f, 0.135f),
+                                  dfv::Vector3(0.f, 0.f, 0.113f),
+                                  dfv::Vector3(0.f, 0.f, 0.105f)};
 
 Youbot::Youbot(ros::NodeHandle& node_handle_, 
                std::string arm_topic_name_, 
@@ -41,6 +46,56 @@ Youbot::Youbot(ros::NodeHandle& node_handle_,
 Youbot::~Youbot()
 {
     
+}
+
+dfv::Quaternion Youbot::GetJointLocalQuaternion(int index) const
+{
+    if (index == 0)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::k,
+            this->joint_positions[0] - this->joint_ini_pos[0]);
+    }
+    else if (index == 1)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::j,
+            this->joint_positions[1] - this->joint_ini_pos[1]);
+    }
+    else if (index == 2)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::j,
+            this->joint_positions[2] - this->joint_ini_pos[2]);
+    }
+    else if (index == 3)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::j,
+            this->joint_positions[3] - this->joint_ini_pos[3]);
+    }
+    else if (index == 4)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::k,
+            this->joint_positions[4] - this->joint_ini_pos[4]);
+    }
+    else
+    {
+        return dfv::Quaternion(0, 0, 0, 0);
+    }
+}
+
+dfv::Vector3 Youbot::GetJointPosition(int index) const
+{
+    if (index == 0)
+    {
+        return dfv::Vector3(0, 0, 0);
+    }
+    else
+    {
+        dfv::Vector3 rn = this->r[index - 1];
+        for (int i = index - 1; i >= 0; i--)
+        {
+            rn.Rotate(this->GetJointLocalQuaternion(i));
+        }        
+        return rn + this->GetJointPosition(index - 1);
+    }
 }
 
 void Youbot::PublishMessage(bool publish_gripper)

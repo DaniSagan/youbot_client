@@ -30,4 +30,4 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(youbot_client src/control.cpp src/slider.cpp src/youbot.cpp src/client.cpp)
-target_link_libraries(youbot_client sfml-graphics sfml-window sfml-system sfml-network sfml-audio)
+target_link_libraries(youbot_client dfv sfml-graphics sfml-window sfml-system sfml-network sfml-audio)
