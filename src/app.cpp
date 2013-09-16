@@ -39,6 +39,18 @@ void App::HandleInput()
             this->window.Close();
         }
         
+        if (event.Type == sf::Event::KeyPressed)
+        {
+            if (event.Key.Code == sf::Key::O)
+            {
+                youbot.OpenGripper();
+            }
+            if (event.Key.Code == sf::Key::C)
+            {
+                youbot.CloseGripper();
+            }
+        }
+        
         std::list<std::string> responses;
         for (unsigned int i = 0; i < this->sliders.size(); i++)
         {
@@ -136,6 +148,7 @@ bool App::AddControls()
         this->sliders[i].SetMinValue(Youbot::joint_min_pos[i]);
         this->sliders[i].SetMaxValue(Youbot::joint_max_pos[i]);
         this->sliders[i].SetCurrentValue(Youbot::joint_ini_pos[i]);
+        this->sliders[i].Disable();
     }
     
     // text displays
