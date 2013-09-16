@@ -3,7 +3,7 @@
 App::App(ros::NodeHandle& node_handle_):
     node_handle(node_handle_),
     youbot(node_handle_),
-    state(App::slider_control)
+    state(App::sensor_control)
 {
 }
 
@@ -81,6 +81,7 @@ void App::Update()
         {
             this->sliders[i].Disable();
         }
+        this->state = App::sensor_control;
     }
     if (this->button_activate.GetState() == dfv::Button::clicked)
     {
@@ -88,6 +89,7 @@ void App::Update()
         {
             this->sliders[i].Enable();
         }
+        this->state = App::slider_control;
     }
     
     for (unsigned int i = 0; i < this->sliders.size(); i++)
