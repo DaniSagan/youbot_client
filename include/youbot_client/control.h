@@ -14,8 +14,8 @@ public:
     Control();
     ~Control();
     
-    void SetSize(const sf::Vector2i& size);
-    void SetPosition(const sf::Vector2i& position);
+    virtual void SetSize(const sf::Vector2i& size);
+    virtual void SetPosition(const sf::Vector2i& position);
     virtual void Draw(sf::RenderWindow& window) const;
     virtual void HandleEvent(std::list<std::string>& responses, const sf::Event& event);
     

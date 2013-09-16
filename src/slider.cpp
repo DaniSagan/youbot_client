@@ -20,31 +20,58 @@ Slider::~Slider()
 
 void Slider::Draw(sf::RenderWindow& window) const
 {
-    sf::Shape sh = sf::Shape::Rectangle(this->position.x, 
-                                        this->position.y, 
-                                        this->position.x + this->size.x, 
-                                        this->position.y + this->size.y,
-                                        sf::Color(220, 220, 220), 
-                                        1.f, sf::Color(0, 0, 0));
-    window.Draw(sh);
-    
-    float slider_pos_x = (float)this->position.x + 
-                         (float)this->size.x * this->slider_position;
-                         
-    sh = sf::Shape::Line(slider_pos_x, 
-                         this->position.y, 
-                         slider_pos_x, 
-                         this->position.y + this->size.y,
-                         3.f,
-                         sf::Color(255, 0, 0));
-                         
-    window.Draw(sh);
+    if (this->state == Slider::disabled)
+    {
+        sf::Shape sh = sf::Shape::Rectangle(this->position.x, 
+                                            this->position.y, 
+                                            this->position.x + this->size.x, 
+                                            this->position.y + this->size.y,
+                                            sf::Color(100, 100, 100));//, 
+                                            //1.f, sf::Color(0, 0, 0));
+        window.Draw(sh);
+        
+        float slider_pos_x = (float)this->position.x + 
+                             (float)this->size.x * this->slider_position;
+                             
+        sh = sf::Shape::Line(slider_pos_x, 
+                             this->position.y, 
+                             slider_pos_x, 
+                             this->position.y + this->size.y,
+                             3.f,
+                             sf::Color(170, 170, 170));
+                             
+        window.Draw(sh);
+    }
+    else
+    {
+        sf::Shape sh = sf::Shape::Rectangle(this->position.x, 
+                                            this->position.y, 
+                                            this->position.x + this->size.x, 
+                                            this->position.y + this->size.y,
+                                            sf::Color(220, 200, 250));//, 
+                                            //1.f, sf::Color(0, 0, 0));
+        window.Draw(sh);
+        
+        float slider_pos_x = (float)this->position.x + 
+                             (float)this->size.x * this->slider_position;
+                             
+        sh = sf::Shape::Line(slider_pos_x, 
+                             this->position.y, 
+                             slider_pos_x, 
+                             this->position.y + this->size.y,
+                             3.f,
+                             sf::Color(255, 0, 0));
+                             
+        window.Draw(sh);
+    }
     
 }
 
 void Slider::HandleEvent(std::list<std::string>& responses, 
                          const sf::Event& event)
 {
+    if (this->state == Slider::disabled) return;
+    
     if (event.Type == sf::Event::MouseButtonPressed)
     {
         sf::Vector2i mouse_pos(event.MouseButton.X, event.MouseButton.Y);
@@ -124,6 +151,16 @@ void Slider::SetSliderPosition(sf::Vector2i mouse_pos)
         this->slider_position = (float)(mouse_pos.x - this->position.x) / 
                                 (float)(this->size.x);
     }
+}
+
+void Slider::Disable()
+{
+    this->state = Slider::disabled;
+}
+
+void Slider::Enable()
+{
+    this->state = Slider::normal;
 }
 
 }

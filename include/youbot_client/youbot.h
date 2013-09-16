@@ -31,10 +31,17 @@ class Youbot
         void PublishMessage(bool publish_gripper = false);
         
         dfv::Quaternion GetJointLocalQuaternion(int index) const;
+        dfv::Quaternion GetJointLocalQuatFromAngle(int index, float angle) const;
+        
         dfv::Vector3 GetJointPosition(int index) const;
+        dfv::Vector3 GetJointPosFromAngles(unsigned int index, 
+                                           const std::vector<float>& joint_angles) const;
         
         void OpenGripper();
         void CloseGripper();
+        void ResetArmPosition();
+        
+        std::vector<float> FindAnglesForPos(dfv::Vector3& target_pos);
         
         static const float joint_min_pos[];
         static const float joint_max_pos[];

@@ -82,6 +82,39 @@ dfv::Quaternion Youbot::GetJointLocalQuaternion(int index) const
     }
 }
 
+dfv::Quaternion Youbot::GetJointLocalQuatFromAngle(int index, float angle) const
+{
+    if (index == 0)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::k,
+            angle - this->joint_ini_pos[0]);
+    }
+    else if (index == 1)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::j,
+            angle - this->joint_ini_pos[1]);
+    }
+    else if (index == 2)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::j,
+            angle - this->joint_ini_pos[2]);
+    }
+    else if (index == 3)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::j,
+            angle - this->joint_ini_pos[3]);
+    }
+    else if (index == 4)
+    {
+        return dfv::Quaternion::GetRotationQuaternion(-dfv::Vector3::k,
+            angle - this->joint_ini_pos[4]);
+    }
+    else
+    {
+        return dfv::Quaternion(0, 0, 0, 0);
+    }
+}
+
 dfv::Vector3 Youbot::GetJointPosition(int index) const
 {
     if (index == 0)
@@ -96,6 +129,39 @@ dfv::Vector3 Youbot::GetJointPosition(int index) const
             rn.Rotate(this->GetJointLocalQuaternion(i));
         }        
         return rn + this->GetJointPosition(index - 1);
+    }
+}
+
+void Youbot::ResetArmPosition()
+{
+    for (unsigned int i = 0; i < 5; i++)
+    {
+        this->joint_positions[i] = Youbot::joint_ini_pos[i];
+    }
+    this->PublishMessage();
+}
+
+dfv::Vector3 Youbot::GetJointPosFromAngles(unsigned int index, const std::vector<float>& joint_angles) const
+{
+    if (joint_angles.size() == 5)
+    {
+        if (index == 0)
+        {
+            return dfv::Vector3(0, 0, 0);
+        }
+        else
+        {
+            dfv::Vector3 rn = this->r[index - 1];
+            for (int i = index - 1; i >= 0; i--)
+            {
+                rn.Rotate(this->GetJointLocalQuatFromAngle(i, joint_angles[i]));
+            }        
+            return rn + this->GetJointPosFromAngles(index - 1, joint_angles);
+        }
+    }
+    else
+    {
+        return dfv::Vector3(0, 0, 0);
     }
 }
 
@@ -150,6 +216,31 @@ void Youbot::CloseGripper()
         this->gripper_publisher.publish(gripper_msg);
         this->gripper_state = closed;
     }
+}
+
+std::vector<float> Youbot::FindAnglesForPos(dfv::Vector3& target_pos)
+{
+    // cylindrical coordinates
+    float theta_0 = atan2(target_pos.y, target_pos.x);
+    float r = sqrt(target_pos.x*target_pos.x + target_pos.y*target_pos.y) + Youbot::r[0].x;
+    float h = target_pos.z - Youbot::r[0].z;
+    
+    float l = sqrt(r*r + h*h);
+    float x = (l*l + Youbot::r[2].z*Youbot::r[2].z - Youbot::r[1].z*Youbot::r[1].z) / (2*l);
+    float hh = sqrt(Youbot::r[2].z*Youbot::r[2].z - x*x);
+    float a0 = asin(hh / Youbot::r[1].z);
+    float a1 = asin(hh / Youbot::r[2].z);
+    float g0 = atan2(h, r);
+    float g1 = atan2(r, h);
+    float theta_1 = 3.1415926535f/2.f - a0 - g0;
+    float theta_2 = a1 + g1 - theta_1;
+    
+    std::vector<float> res(3);
+    res[0] = theta_0;
+    res[1] = theta_1;
+    res[2] = theta_2;
+    
+    return res; 
 }
 
 

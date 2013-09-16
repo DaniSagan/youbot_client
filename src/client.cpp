@@ -85,6 +85,10 @@ int main(int argc, char** argv)
     
     while(!node_handle.ok());
     
+    dfv::Vector3 target_pos(-0.034f, 0.0f, 0.0365f);
+    std::vector<float> sol = youbot.FindAnglesForPos(target_pos);
+    std::cout << sol[0] << ", " << sol[1] << ", " << sol[2] << std::endl;
+    
     // Main loop    
     while (window.IsOpened() && node_handle.ok())
     {
@@ -153,7 +157,18 @@ int main(int argc, char** argv)
         window.Display();
         
         youbot.PublishMessage();
+        
+        // Testing new functions
+        
+        /*std::vector<float> joint_angles(5);
+        for (unsigned int i = 0; i < 5; i++)
+        {
+            joint_angles[i] = youbot.joint_positions[i];
+        }
+        dfv::Vector3 v = youbot.GetJointPosFromAngles(5, joint_angles);
+        std::cout << v << std::endl;*/
     }
+    
     
     return 0;
 }

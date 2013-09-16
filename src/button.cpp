@@ -30,8 +30,8 @@ void Button::Draw(sf::RenderWindow& window) const
                                         this->position.y, 
                                         this->position.x + this->size.x, 
                                         this->position.y + this->size.y,
-                                        button_color, 
-                                        1.f, sf::Color(0, 0, 0));
+                                        button_color);//, 
+                                        //1.f, sf::Color(0, 0, 0));
     window.Draw(sh);
     
     sf::String caption;
@@ -42,11 +42,11 @@ void Button::Draw(sf::RenderWindow& window) const
     caption.SetText(this->text);
     caption.SetColor(sf::Color::Black);
     //caption.SetPosition(sf::Vector2f(this->position.x, this->position.y));
-    caption.SetSize(18.f);
+    caption.SetSize(16.f);
     
     sf::FloatRect rect = caption.GetRect();
-    caption.SetPosition(sf::Vector2f(this->position.x + (this->size.x - rect.GetWidth()) / 2, 
-                                     this->position.y + (this->size.y - rect.GetHeight()) / 2));
+    caption.SetPosition(sf::Vector2f(floor(this->position.x + (this->size.x - rect.GetWidth()) / 2), 
+                                     floor(this->position.y + (this->size.y - rect.GetHeight()) / 2)));
                              
     window.Draw(caption);
 }

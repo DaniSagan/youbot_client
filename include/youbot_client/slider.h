@@ -24,11 +24,14 @@ public:
     {
         normal = 0,
         over,
-        clicked
+        clicked,
+        disabled
     };
     
     float GetCurrentValue() const;
     void SetCurrentValue(float value);
+    void Disable();
+    void Enable();
     
 protected:
     float min_value;
