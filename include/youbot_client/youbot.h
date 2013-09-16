@@ -17,13 +17,15 @@
 #include <ros/ros.h>
 #include <brics_actuator/JointPositions.h>
 #include <dfv/dfv.h>
+#include <sensor_msgs/JointState.h>
 
 class Youbot
 {
     public:
         Youbot(ros::NodeHandle& node_handle_, 
                std::string arm_topic_name_ = "arm_1/arm_controller/position_command", 
-               std::string gripper_topic_name_ = "arm_1/gripper_controller/position_command");
+               std::string gripper_topic_name_ = "arm_1/gripper_controller/position_command",
+               std::string joint_states_topic_name = "joint_states");
         ~Youbot();
         
         double joint_positions[5];
@@ -55,6 +57,8 @@ class Youbot
             open
         };
         
+        std::vector<float> joint_states;
+        
     private:
         ros::NodeHandle& node_handle;
         ros::Publisher arm_publisher;
@@ -64,6 +68,9 @@ class Youbot
         std::vector<brics_actuator::JointValue> v_gripper_values;
         
         GripperState gripper_state;
+        
+        ros::Subscriber joint_states_subscriber;
+        void JointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg);
 };
 
 #endif

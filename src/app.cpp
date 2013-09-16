@@ -41,13 +41,29 @@ void App::HandleInput()
         
         if (event.Type == sf::Event::KeyPressed)
         {
-            if (event.Key.Code == sf::Key::O)
+            if (event.Key.Code == sf::Key::Q)
             {
                 youbot.OpenGripper();
             }
-            if (event.Key.Code == sf::Key::C)
+            if (event.Key.Code == sf::Key::A)
             {
                 youbot.CloseGripper();
+            }
+            if (event.Key.Code == sf::Key::W)
+            {
+                for (unsigned int i = 0; i < this->sliders.size(); i++)
+                {
+                    this->sliders[i].Disable();
+                }
+                this->state = App::sensor_control;
+            }
+            if (event.Key.Code == sf::Key::S)
+            {
+                for (unsigned int i = 0; i < this->sliders.size(); i++)
+                {
+                    this->sliders[i].Enable();
+                }
+                this->state = App::slider_control;
             }
         }
         
@@ -65,17 +81,7 @@ void App::HandleInput()
 }
 
 void App::Update()
-{
-    for (unsigned int i = 0; i < this->text_joint_pos.size(); i++)
-    {
-        std::stringstream ss;
-        ss << sliders[i].GetCurrentValue() << " [rad]";
-        this->text_joint_pos[i].SetText(ss.str());
-        
-        ss.str(std::string(""));
-        ss << this->sliders[i].GetCurrentValue() - Youbot::joint_ini_pos[i] << " [rad]";
-        this->text_joint_pos_2[i].SetText(ss.str());
-    }
+{   
     
     if (this->button_open.GetState() == dfv::Button::clicked) youbot.OpenGripper();
     if (this->button_close.GetState() == dfv::Button::clicked) youbot.CloseGripper();
@@ -110,6 +116,24 @@ void App::Update()
     }
     
     if (this->state == App::slider_control) youbot.PublishMessage();
+    if (this->state == App::sensor_control)
+    {
+        for (unsigned int i = 0; i < this->youbot.joint_states.size(); i++)
+        {
+            this->sliders[i].SetCurrentValue(this->youbot.joint_states[i]);
+        }
+    }
+    
+    for (unsigned int i = 0; i < this->text_joint_pos.size(); i++)
+    {
+        std::stringstream ss;
+        ss << sliders[i].GetCurrentValue() << " [rad]";
+        this->text_joint_pos[i].SetText(ss.str());
+        
+        ss.str(std::string(""));
+        ss << this->sliders[i].GetCurrentValue() - Youbot::joint_ini_pos[i] << " [rad]";
+        this->text_joint_pos_2[i].SetText(ss.str());
+    }
 }
 
 void App::Draw()
@@ -180,12 +204,12 @@ bool App::AddControls()
     this->button_open.SetFont(&this->font_med);
     this->button_open.SetPosition(sf::Vector2i(50, 250));
     this->button_open.SetSize(sf::Vector2i(200, 25));
-    this->button_open.SetText("Open Gripper");
+    this->button_open.SetText("[Q] Open Gripper");
     
     this->button_close.SetFont(&this->font_med);
     this->button_close.SetPosition(sf::Vector2i(50, 280));
     this->button_close.SetSize(sf::Vector2i(200, 25));
-    this->button_close.SetText("Close Gripper");
+    this->button_close.SetText("[A] Close Gripper");
     
     this->button_reset.SetFont(&this->font_med);
     this->button_reset.SetPosition(sf::Vector2i(50, 310));
@@ -195,12 +219,12 @@ bool App::AddControls()
     this->button_deactivate.SetFont(&this->font_med);
     this->button_deactivate.SetPosition(sf::Vector2i(50, 340));
     this->button_deactivate.SetSize(sf::Vector2i(200, 25));
-    this->button_deactivate.SetText("Deactivate sliders");
+    this->button_deactivate.SetText("[W] Deactivate sliders");
     
     this->button_activate.SetFont(&this->font_med);
     this->button_activate.SetPosition(sf::Vector2i(50, 370));
     this->button_activate.SetSize(sf::Vector2i(200, 25));
-    this->button_activate.SetText("Activate sliders");
+    this->button_activate.SetText("[S] Activate sliders");
     
     return true;
 }

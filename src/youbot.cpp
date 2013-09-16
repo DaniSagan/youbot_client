@@ -11,7 +11,8 @@ const dfv::Vector3 Youbot::r[] = {dfv::Vector3(-0.034f, 0.f, 0.075f),
 
 Youbot::Youbot(ros::NodeHandle& node_handle_, 
                std::string arm_topic_name_, 
-               std::string gripper_topic_name):
+               std::string gripper_topic_name,
+               std::string joint_states_topic_name):
     node_handle(node_handle_),
     gripper_state(closed)
 {
@@ -41,6 +42,13 @@ Youbot::Youbot(ros::NodeHandle& node_handle_,
         
         this->gripper_positions[0] = 0.01;    
         this->gripper_positions[1] = 0.01;
+        
+    this->joint_states.resize(5);    
+    this->joint_states_subscriber = 
+        this->node_handle.subscribe(joint_states_topic_name, 
+                                    1,
+                                    &Youbot::JointStatesCallback,
+                                    this);
         
 }
 
@@ -241,6 +249,14 @@ std::vector<float> Youbot::FindAnglesForPos(dfv::Vector3& target_pos)
     res[2] = theta_2;
     
     return res; 
+}
+
+void Youbot::JointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg)
+{
+    for (unsigned int i = 0; i < this->joint_states.size(); i++)
+    {
+        this->joint_states[i] = msg->position[i];
+    }
 }
 
 
