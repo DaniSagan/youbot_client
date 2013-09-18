@@ -42,13 +42,35 @@ void Slider::Draw(sf::RenderWindow& window) const
                              
         window.Draw(sh);
     }
-    else
+    else if (this->state == Slider::normal)
     {
         sf::Shape sh = sf::Shape::Rectangle(this->position.x, 
                                             this->position.y, 
                                             this->position.x + this->size.x, 
                                             this->position.y + this->size.y,
                                             sf::Color(220, 200, 250));//, 
+                                            //1.f, sf::Color(0, 0, 0));
+        window.Draw(sh);
+        
+        float slider_pos_x = (float)this->position.x + 
+                             (float)this->size.x * this->slider_position;
+                             
+        sh = sf::Shape::Line(slider_pos_x, 
+                             this->position.y, 
+                             slider_pos_x, 
+                             this->position.y + this->size.y,
+                             3.f,
+                             sf::Color(255, 0, 0));
+                             
+        window.Draw(sh);
+    }
+    else
+    {
+        sf::Shape sh = sf::Shape::Rectangle(this->position.x, 
+                                            this->position.y, 
+                                            this->position.x + this->size.x, 
+                                            this->position.y + this->size.y,
+                                            sf::Color(220.f * 0.9, 200.f*0.9, 250.f * 0.9));//, 
                                             //1.f, sf::Color(0, 0, 0));
         window.Draw(sh);
         

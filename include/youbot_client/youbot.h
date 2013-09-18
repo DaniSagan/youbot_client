@@ -18,8 +18,12 @@
 #include <brics_actuator/JointPositions.h>
 #include <dfv/dfv.h>
 #include <sensor_msgs/JointState.h>
+#include "youbot_client/control.h"
 
-class Youbot
+namespace dfv
+{
+
+class Youbot : public Control
 {
     public:
         Youbot(ros::NodeHandle& node_handle_, 
@@ -59,7 +63,13 @@ class Youbot
         
         std::vector<float> joint_states;
         
-    private:
+        // override methods
+        virtual void Draw(sf::RenderWindow& window) const;
+        virtual void HandleEvent(std::list<std::string>& responses, const sf::Event& event);
+        
+        void SetFont(const sf::Font& font);
+        
+    protected:
         ros::NodeHandle& node_handle;
         ros::Publisher arm_publisher;
         ros::Publisher gripper_publisher;
@@ -71,6 +81,11 @@ class Youbot
         
         ros::Subscriber joint_states_subscriber;
         void JointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg);
+        
+        sf::String str_radius;
+        sf::String str_height;
 };
+
+}
 
 #endif

@@ -1,5 +1,8 @@
 #include <youbot_client/youbot.h>
 
+namespace dfv
+{
+
 const float Youbot::joint_min_pos[] = {0.0100692f, 0.0100692f, -5.02655f, 0.0221239f, 0.110619f};
 const float Youbot::joint_max_pos[] = {5.84014f, 2.61799f, -0.015708f, 3.4292f, 5.64159f};
 const float Youbot::joint_ini_pos[] = {2.959675f, 1.144533f, -2.57124f, 1.811086f, 2.91237f};
@@ -13,6 +16,7 @@ Youbot::Youbot(ros::NodeHandle& node_handle_,
                std::string arm_topic_name_, 
                std::string gripper_topic_name,
                std::string joint_states_topic_name):
+    Control(),
     node_handle(node_handle_),
     gripper_state(closed)
 {
@@ -257,6 +261,150 @@ void Youbot::JointStatesCallback(const sensor_msgs::JointState::ConstPtr& msg)
     {
         this->joint_states[i] = msg->position[i];
     }
+}
+
+void Youbot::Draw(sf::RenderWindow& window) const
+{
+    const float scale = 200.f;
+    const float center_off = 0.7f;
+    
+    // background
+    sf::Shape bg = sf::Shape::Rectangle(this->position.x, 
+                                        this->position.y,
+                                        this->position.x + this->size.x,
+                                        this->position.y + this->size.y,
+                                        sf::Color(235, 215, 255)
+                                        );
+    window.Draw(bg);
+    
+    // upper view
+    dfv::Vector3 arm_orig(this->position.x + center_off * scale, 
+                          this->position.y + center_off * scale,
+                          0.f);
+                          
+    std::vector<dfv::Vector3> curr_joint_pos(6);
+    for (unsigned int i = 0; i < curr_joint_pos.size(); i++)
+    {
+        dfv::Vector3 pos_flipped = this->GetJointPosition(i) * scale;
+        pos_flipped.x = -pos_flipped.x;
+        curr_joint_pos[i] = pos_flipped + arm_orig;
+    }
+    
+    sf::Color line_color(180, 180, 180);
+    
+    // joints
+    for (unsigned int i = 0; i < curr_joint_pos.size(); i++)
+    {
+        sf::Shape c_joint = 
+            sf::Shape::Circle(curr_joint_pos[i].x, curr_joint_pos[i].y,
+                              8.f, sf::Color(0, 0, 0, 0), 1.f, line_color);
+        window.Draw(c_joint);
+    }
+    
+    dfv::Vector3 gripper_pos = this->GetJointPosition(5);
+    float radius = sqrt(gripper_pos.x*gripper_pos.x + 
+                        gripper_pos.y*gripper_pos.y) * scale;
+    sf::Shape circ = sf::Shape::Circle(curr_joint_pos[0].x, curr_joint_pos[0].y, radius, sf::Color(0, 0, 0, 0), 
+                                       1.f, sf::Color(0, 0, 0));
+    window.Draw(circ);
+    
+    for (unsigned int i = 0; i < 5; i++)
+    {
+        sf::Shape s = sf::Shape::Line(curr_joint_pos[i].x, curr_joint_pos[i].y,
+                                      curr_joint_pos[i + 1].x, curr_joint_pos[i + 1].y,
+                                      5.f, sf::Color(255, 128, 0));
+        window.Draw(s);
+    }    
+    
+    // side view
+    arm_orig += dfv::Vector3(250, 100, 0);
+    for (unsigned int i = 0; i < curr_joint_pos.size(); i++)
+    {
+        dfv::Vector3 pos = this->GetJointPosition(i) * scale * 2.0;
+        float r = sqrt(pos.x*pos.x + pos.y*pos.y);
+        float h = pos.z;
+        curr_joint_pos[i] = dfv::Vector3(r, -h, 0.f) + arm_orig;
+    }
+    
+    // joints
+    for (unsigned int i = 0; i < curr_joint_pos.size(); i++)
+    {
+        sf::Shape c_joint = 
+            sf::Shape::Circle(curr_joint_pos[i].x, curr_joint_pos[i].y,
+                              8.f, sf::Color(0, 0, 0, 0), 1.f, line_color);
+        window.Draw(c_joint);
+    }
+    
+    // dimension lines
+    float d_offset = 20.f;
+    
+    // horizontal
+    sf::Shape l = sf::Shape::Line(curr_joint_pos[0].x, curr_joint_pos[0].y, 
+                                  curr_joint_pos[0].x, curr_joint_pos[0].y + d_offset,
+                                  1.0, sf::Color(0, 0, 0));
+    window.Draw(l);
+    l = sf::Shape::Line(curr_joint_pos[0].x, curr_joint_pos[0].y + d_offset, 
+                        curr_joint_pos[5].x, curr_joint_pos[0].y + d_offset,
+                        1.0, sf::Color(0, 0, 0));
+    window.Draw(l);
+    l = sf::Shape::Line(curr_joint_pos[5].x, curr_joint_pos[0].y + d_offset, 
+                        curr_joint_pos[5].x, curr_joint_pos[5].y,
+                        1.0, sf::Color(0, 0, 0));
+    window.Draw(l);
+    
+    std::stringstream ss;
+    dfv::Vector3 pos = this->GetJointPosition(5);
+    ss << floor(sqrt(pos.x*pos.x + pos.y*pos.y) * 1000.f) << " mm";
+    sf::String str_r;
+    str_r.SetText(ss.str());
+    str_r.SetPosition(floor(curr_joint_pos[5].x - 5.f), floor(curr_joint_pos[0].y + 22.f));
+    str_r.SetColor(sf::Color(0, 0, 0));
+    str_r.SetFont(this->str_radius.GetFont());
+    str_r.SetSize(12.f);
+    window.Draw(str_r);
+    
+    
+    // vertical
+    l = sf::Shape::Line(curr_joint_pos[0].x, curr_joint_pos[0].y, 
+                        curr_joint_pos[5].x + d_offset, curr_joint_pos[0].y,
+                        1.0, sf::Color(0, 0, 0));
+    window.Draw(l);
+    l = sf::Shape::Line(curr_joint_pos[5].x + d_offset, curr_joint_pos[0].y, 
+                        curr_joint_pos[5].x + d_offset, curr_joint_pos[5].y,
+                        1.0, sf::Color(0, 0, 0));
+    window.Draw(l);
+    l = sf::Shape::Line(curr_joint_pos[5].x + d_offset, curr_joint_pos[5].y, 
+                        curr_joint_pos[5].x, curr_joint_pos[5].y,
+                        1.0, sf::Color(0, 0, 0));
+    window.Draw(l);
+    
+    ss.str(std::string(""));
+    ss << floor(pos.z * 1000.f) << " mm";
+    str_r.SetText(ss.str());
+    str_r.SetPosition(floor(curr_joint_pos[5].x + 25.f), floor(curr_joint_pos[5].y - 10.f));
+    window.Draw(str_r);
+    
+    
+    for (unsigned int i = 0; i < 5; i++)
+    {
+        sf::Shape s = sf::Shape::Line(curr_joint_pos[i].x, curr_joint_pos[i].y,
+                                      curr_joint_pos[i + 1].x, curr_joint_pos[i + 1].y,
+                                      5.f, sf::Color(255, 128, 0));
+        window.Draw(s);
+    } 
+    
+}
+
+void Youbot::HandleEvent(std::list<std::string>& responses, const sf::Event& event)
+{
+}
+
+void Youbot::SetFont(const sf::Font& font)
+{
+    this->str_radius.SetFont(font);
+    this->str_height.SetFont(font);
+}
+
 }
 
 

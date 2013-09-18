@@ -34,22 +34,30 @@ protected:
 private:
     ros::NodeHandle& node_handle;    
     sf::RenderWindow window;
-    Youbot youbot;
+    dfv::Youbot youbot;
     State state;
     
     sf::Font font_big;
     sf::Font font_med;
+    sf::Font font_small;
     
     
     // Window Components
     std::vector<dfv::Slider> sliders;    
     std::vector<dfv::Text> text_joint_pos;
     std::vector<dfv::Text> text_joint_pos_2;
+    
     dfv::Button button_open;
     dfv::Button button_close;
     dfv::Button button_reset;
     dfv::Button button_deactivate;
     dfv::Button button_activate;
+    
+    dfv::Button button_e1;
+    dfv::Button button_e2;
+    dfv::Button button_e3;
+    dfv::Button button_e4;
+    dfv::Button button_e5;
     
 };
 
