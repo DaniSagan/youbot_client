@@ -35,6 +35,7 @@ int main(int argc, char** argv)
             msg.angular.z = 0.f;
             publisher.publish(msg);
             counter = 0;
+            ROS_WARN("Sentinel triggered. Stopping platform");
         }
         
         ros::spinOnce();

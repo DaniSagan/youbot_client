@@ -18,6 +18,7 @@
 #include <brics_actuator/JointPositions.h>
 #include <dfv/dfv.h>
 #include <sensor_msgs/JointState.h>
+#include <geometry_msgs/Twist.h>
 #include "youbot_client/control.h"
 
 namespace dfv
@@ -29,12 +30,18 @@ class Youbot : public Control
         Youbot(ros::NodeHandle& node_handle_, 
                std::string arm_topic_name_ = "arm_1/arm_controller/position_command", 
                std::string gripper_topic_name_ = "arm_1/gripper_controller/position_command",
-               std::string joint_states_topic_name = "joint_states");
+               std::string joint_states_topic_name = "joint_states",
+               std::string cmd_vel_topic_name = "cmd_vel");
         ~Youbot();
         
         double joint_positions[5];
         double gripper_positions[2];
+        
+        dfv::Vector3 linear_vel;
+        dfv::Vector3 angular_vel;
+        
         void PublishMessage(bool publish_gripper = false);
+        void PublishPlatformVel();
         
         dfv::Quaternion GetJointLocalQuaternion(int index) const;
         dfv::Quaternion GetJointLocalQuatFromAngle(int index, float angle) const;
@@ -73,6 +80,7 @@ class Youbot : public Control
         ros::NodeHandle& node_handle;
         ros::Publisher arm_publisher;
         ros::Publisher gripper_publisher;
+        ros::Publisher cmd_vel_publisher;
         
         std::vector<brics_actuator::JointValue> v_joint_values;
         std::vector<brics_actuator::JointValue> v_gripper_values;

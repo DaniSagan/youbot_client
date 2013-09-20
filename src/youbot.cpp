@@ -15,7 +15,8 @@ const dfv::Vector3 Youbot::r[] = {dfv::Vector3(-0.034f, 0.f, 0.075f),
 Youbot::Youbot(ros::NodeHandle& node_handle_, 
                std::string arm_topic_name_, 
                std::string gripper_topic_name,
-               std::string joint_states_topic_name):
+               std::string joint_states_topic_name,
+               std::string cmd_vel_topic_name):
     Control(),
     node_handle(node_handle_),
     gripper_state(closed)
@@ -24,28 +25,30 @@ Youbot::Youbot(ros::NodeHandle& node_handle_,
         this->node_handle.advertise<brics_actuator::JointPositions>(arm_topic_name_, 1);
     this->gripper_publisher = 
         this->node_handle.advertise<brics_actuator::JointPositions>(gripper_topic_name, 1);
-        
-        this->v_joint_values.resize(5);
-        for(int i = 0; i < 5; ++i)
-        {
-            std::stringstream ss;
-            ss << "arm_joint_" << (i+1);
-            v_joint_values[i].joint_uri = ss.str();
-            v_joint_values[i].unit = std::string("rad");
-            v_joint_values[i].value = 0.0;
-        }
-        
-        this->v_gripper_values.resize(2);
-        v_gripper_values[0].joint_uri = "gripper_finger_joint_l";
-        v_gripper_values[0].unit = std::string("m");
-        v_gripper_values[0].value = 0.001;
-        
-        v_gripper_values[1].joint_uri = "gripper_finger_joint_r";
-        v_gripper_values[1].unit = std::string("m");
-        v_gripper_values[1].value = 0.001;
-        
-        this->gripper_positions[0] = 0.01;    
-        this->gripper_positions[1] = 0.01;
+    this->cmd_vel_publisher = 
+        this->node_handle.advertise<geometry_msgs::Twist>(cmd_vel_topic_name, 1);
+    
+    this->v_joint_values.resize(5);
+    for(int i = 0; i < 5; ++i)
+    {
+        std::stringstream ss;
+        ss << "arm_joint_" << (i+1);
+        v_joint_values[i].joint_uri = ss.str();
+        v_joint_values[i].unit = std::string("rad");
+        v_joint_values[i].value = 0.0;
+    }
+    
+    this->v_gripper_values.resize(2);
+    v_gripper_values[0].joint_uri = "gripper_finger_joint_l";
+    v_gripper_values[0].unit = std::string("m");
+    v_gripper_values[0].value = 0.001;
+    
+    v_gripper_values[1].joint_uri = "gripper_finger_joint_r";
+    v_gripper_values[1].unit = std::string("m");
+    v_gripper_values[1].value = 0.001;
+    
+    this->gripper_positions[0] = 0.01;    
+    this->gripper_positions[1] = 0.01;
         
     this->joint_states.resize(5);    
     this->joint_states_subscriber = 
@@ -200,6 +203,19 @@ void Youbot::PublishMessage(bool publish_gripper)
         
         this->gripper_publisher.publish(gripper_msg);         
     }
+}
+
+void Youbot::PublishPlatformVel()
+{
+    geometry_msgs::Twist msg;
+    msg.linear.x = this->linear_vel.x;
+    msg.linear.y = this->linear_vel.y;
+    msg.linear.z = this->linear_vel.z;
+    msg.angular.x = this->angular_vel.x;
+    msg.angular.y = this->angular_vel.y;
+    msg.angular.z = this->angular_vel.z;
+    this->cmd_vel_publisher.publish(msg);
+    
 }
 
 void Youbot::OpenGripper()
