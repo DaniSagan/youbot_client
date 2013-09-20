@@ -39,6 +39,7 @@ void App::HandleInput()
             this->window.Close();
         }
         
+        // Key events
         if (event.Type == sf::Event::KeyPressed)
         {
             if (event.Key.Code == sf::Key::Q)
@@ -64,6 +65,26 @@ void App::HandleInput()
                     this->sliders[i].Enable();
                 }
                 this->state = App::slider_control;
+            }
+            if (event.Key.Code == sf::Key::U)
+            {
+                youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.01f);
+            }
+            if (event.Key.Code == sf::Key::O)
+            {
+                youbot.angular_vel = dfv::Vector3(0.f, 0.f, -0.01f);
+            }
+        }
+        
+        if (event.Type == sf::Event::KeyReleased)
+        {
+            if (event.Key.Code == sf::Key::U)
+            {
+                youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.f);
+            }
+            if (event.Key.Code == sf::Key::O)
+            {
+                youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.f);
             }
         }
         
@@ -142,6 +163,8 @@ void App::Update()
         ss << std::fixed << this->sliders[i].GetCurrentValue() - dfv::Youbot::joint_ini_pos[i] << " [rad]";
         this->text_joint_pos_2[i].SetText(ss.str());
     }
+    
+    youbot.PublishPlatformVel();
 }
 
 void App::Draw()
