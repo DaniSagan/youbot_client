@@ -35,3 +35,5 @@ target_link_libraries(client dfv sfml-graphics sfml-window sfml-system sfml-netw
 
 rosbuild_add_executable(sentinel src/youbot_sentinel.cpp)
 target_link_libraries(sentinel dfv)
+
+rosbuild_add_executable(server_example src/server.cpp)

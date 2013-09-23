@@ -30,8 +30,8 @@ void Button::Draw(sf::RenderWindow& window) const
                                         this->position.y, 
                                         this->position.x + this->size.x, 
                                         this->position.y + this->size.y,
-                                        button_color);//, 
-                                        //1.f, sf::Color(0, 0, 0));
+                                        button_color, 
+                                        1.f, sf::Color(0, 0, 0));
     window.Draw(sh);
     
     sf::String caption;

@@ -42,15 +42,20 @@ void App::HandleInput()
         // Key events
         if (event.Type == sf::Event::KeyPressed)
         {
-            if (event.Key.Code == sf::Key::Q)
+            // open gripper
+            if (event.Key.Code == sf::Key::Num1)
             {
                 youbot.OpenGripper();
             }
-            if (event.Key.Code == sf::Key::A)
+            
+            // close gripper
+            if (event.Key.Code == sf::Key::Num2)
             {
                 youbot.CloseGripper();
             }
-            if (event.Key.Code == sf::Key::W)
+            
+            // disable sliders
+            if (event.Key.Code == sf::Key::Num3)
             {
                 for (unsigned int i = 0; i < this->sliders.size(); i++)
                 {
@@ -58,7 +63,9 @@ void App::HandleInput()
                 }
                 this->state = App::sensor_control;
             }
-            if (event.Key.Code == sf::Key::S)
+            
+            // enable sliders
+            if (event.Key.Code == sf::Key::Num4)
             {
                 for (unsigned int i = 0; i < this->sliders.size(); i++)
                 {
@@ -66,25 +73,69 @@ void App::HandleInput()
                 }
                 this->state = App::slider_control;
             }
-            if (event.Key.Code == sf::Key::U)
+            
+            // turn left
+            if (event.Key.Code == sf::Key::Q)
             {
-                youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.01f);
+                youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.8f);
             }
-            if (event.Key.Code == sf::Key::O)
+            
+            // turn right
+            if (event.Key.Code == sf::Key::E)
             {
-                youbot.angular_vel = dfv::Vector3(0.f, 0.f, -0.01f);
+                youbot.angular_vel = dfv::Vector3(0.f, 0.f, -0.8f);
+            }
+            
+            // move forward
+            if (event.Key.Code == sf::Key::W)
+            {
+                youbot.linear_vel = dfv::Vector3(0.2f, 0.f, 0.f);
+            }
+            
+            // move backwards
+            if (event.Key.Code == sf::Key::S)
+            {
+                youbot.linear_vel = dfv::Vector3(-0.2f, 0.f, 0.f);
+            }
+            
+            // move to the left
+            if (event.Key.Code == sf::Key::A)
+            {
+                youbot.linear_vel = dfv::Vector3(0.f, 0.2f, 0.f);
+            }
+            
+            // move to the right
+            if (event.Key.Code == sf::Key::D)
+            {
+                youbot.linear_vel = dfv::Vector3(0.0f, -0.2f, 0.f);
             }
         }
         
         if (event.Type == sf::Event::KeyReleased)
         {
-            if (event.Key.Code == sf::Key::U)
+            if (event.Key.Code == sf::Key::Q)
             {
                 youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.f);
             }
-            if (event.Key.Code == sf::Key::O)
+            if (event.Key.Code == sf::Key::E)
             {
                 youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.f);
+            }
+            if (event.Key.Code == sf::Key::W)
+            {
+                youbot.linear_vel = dfv::Vector3(0.f, 0.f, 0.f);
+            }
+            if (event.Key.Code == sf::Key::S)
+            {
+                youbot.linear_vel = dfv::Vector3(0.f, 0.f, 0.f);
+            }
+            if (event.Key.Code == sf::Key::A)
+            {
+                youbot.linear_vel = dfv::Vector3(0.f, 0.f, 0.f);
+            }
+            if (event.Key.Code == sf::Key::D)
+            {
+                youbot.linear_vel = dfv::Vector3(0.0f, 0.f, 0.f);
             }
         }
         

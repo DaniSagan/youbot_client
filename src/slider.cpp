@@ -26,8 +26,8 @@ void Slider::Draw(sf::RenderWindow& window) const
                                             this->position.y, 
                                             this->position.x + this->size.x, 
                                             this->position.y + this->size.y,
-                                            sf::Color(100, 100, 100));//, 
-                                            //1.f, sf::Color(0, 0, 0));
+                                            sf::Color(100, 100, 100), 
+                                            1.f, sf::Color(0, 0, 0));
         window.Draw(sh);
         
         float slider_pos_x = (float)this->position.x + 
@@ -38,7 +38,9 @@ void Slider::Draw(sf::RenderWindow& window) const
                              slider_pos_x, 
                              this->position.y + this->size.y,
                              3.f,
-                             sf::Color(170, 170, 170));
+                             sf::Color(170, 170, 170),
+                             1.0, 
+                             sf::Color(0, 0, 0));
                              
         window.Draw(sh);
     }
@@ -48,8 +50,8 @@ void Slider::Draw(sf::RenderWindow& window) const
                                             this->position.y, 
                                             this->position.x + this->size.x, 
                                             this->position.y + this->size.y,
-                                            sf::Color(220, 200, 250));//, 
-                                            //1.f, sf::Color(0, 0, 0));
+                                            sf::Color(220, 200, 250), 
+                                            1.f, sf::Color(0, 0, 0));
         window.Draw(sh);
         
         float slider_pos_x = (float)this->position.x + 
@@ -60,7 +62,9 @@ void Slider::Draw(sf::RenderWindow& window) const
                              slider_pos_x, 
                              this->position.y + this->size.y,
                              3.f,
-                             sf::Color(255, 0, 0));
+                             sf::Color(255, 0, 0),
+                             1.0, 
+                             sf::Color(0, 0, 0));
                              
         window.Draw(sh);
     }
@@ -70,8 +74,8 @@ void Slider::Draw(sf::RenderWindow& window) const
                                             this->position.y, 
                                             this->position.x + this->size.x, 
                                             this->position.y + this->size.y,
-                                            sf::Color(220.f * 0.9, 200.f*0.9, 250.f * 0.9));//, 
-                                            //1.f, sf::Color(0, 0, 0));
+                                            sf::Color(220.f * 0.9, 200.f*0.9, 250.f * 0.9), 
+                                            1.f, sf::Color(0, 0, 0));
         window.Draw(sh);
         
         float slider_pos_x = (float)this->position.x + 
@@ -82,7 +86,9 @@ void Slider::Draw(sf::RenderWindow& window) const
                              slider_pos_x, 
                              this->position.y + this->size.y,
                              3.f,
-                             sf::Color(255, 0, 0));
+                             sf::Color(255, 0, 0),
+                             1.0, 
+                             sf::Color(0, 0, 0));
                              
         window.Draw(sh);
     }
