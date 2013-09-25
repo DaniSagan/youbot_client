@@ -3,7 +3,8 @@
 App::App(ros::NodeHandle& node_handle_):
     node_handle(node_handle_),
     youbot(node_handle_),
-    state(App::sensor_control)
+    state(App::sensor_control),
+    topic_wd(0)
 {
 }
 
@@ -16,6 +17,7 @@ void App::Initialize()
     this->window.Create(sf::VideoMode(480 * 16 / 9, 480), "Youbot Client", sf::Style::Close);
     this->window.SetFramerateLimit(60);
     this->AddControls();
+    this->SubscribeToTopics();
 }
 
 void App::Run()
@@ -74,6 +76,7 @@ void App::HandleInput()
                 this->state = App::slider_control;
             }
             
+            /*
             // turn left
             if (event.Key.Code == sf::Key::Q)
             {
@@ -108,10 +111,10 @@ void App::HandleInput()
             if (event.Key.Code == sf::Key::D)
             {
                 youbot.linear_vel = dfv::Vector3(0.0f, -0.2f, 0.f);
-            }
+            }*/
         }
         
-        if (event.Type == sf::Event::KeyReleased)
+        /*if (event.Type == sf::Event::KeyReleased)
         {
             if (event.Key.Code == sf::Key::Q)
             {
@@ -137,7 +140,7 @@ void App::HandleInput()
             {
                 youbot.linear_vel = dfv::Vector3(0.0f, 0.f, 0.f);
             }
-        }
+        }*/
         
         std::list<std::string> responses;
         for (unsigned int i = 0; i < this->sliders.size(); i++)
@@ -215,6 +218,14 @@ void App::Update()
         this->text_joint_pos_2[i].SetText(ss.str());
     }
     
+    
+    this->topic_wd++;
+    if (this->topic_wd > 30)
+    {
+        this->youbot.linear_vel = dfv::Vector3(0.f, 0.f, 0.f);
+        this->youbot.angular_vel = dfv::Vector3(0.f, 0.f, 0.f);
+        ROS_WARN("Topic watchdog has actuated");
+    }
     youbot.PublishPlatformVel();
 }
 
@@ -367,6 +378,32 @@ bool App::AddControls()
     this->youbot.SetFont(this->font_small);
     
     return true;
+}
+
+void App::SubscribeToTopics()
+{
+    this->linear_vel_subs = 
+        this->node_handle.subscribe("youbot_client/platform_vel_cmd/linear", 
+                                    1,
+                                    &App::LinearVelCallback,
+                                    this);
+    this->angular_vel_subs = 
+        this->node_handle.subscribe("youbot_client/platform_vel_cmd/angular", 
+                                    1,
+                                    &App::AngularVelCallback,
+                                    this);
+}
+
+void App::LinearVelCallback(const std_msgs::Float32::ConstPtr& msg)
+{
+    this->youbot.linear_vel = dfv::Vector3(msg->data, 0.f, 0.f);
+    this->topic_wd = 0;
+}
+
+void App::AngularVelCallback(const std_msgs::Float32::ConstPtr& msg)
+{
+    this->youbot.angular_vel = dfv::Vector3(0.f, 0.f, -msg->data);
+    this->topic_wd = 0;
 }
     
     

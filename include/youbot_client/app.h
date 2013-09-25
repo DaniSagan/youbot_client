@@ -8,6 +8,7 @@
 #include <youbot_client/button.h>
 #include <youbot_client/slider.h>
 #include <youbot_client/youbot.h>
+#include <std_msgs/Float32.h>
 
 class App
 {
@@ -30,6 +31,8 @@ public:
         sensor_control   
     }; 
     
+    void SubscribeToTopics();
+    
 protected:
 private:
     ros::NodeHandle& node_handle;    
@@ -41,6 +44,13 @@ private:
     sf::Font font_med;
     sf::Font font_small;
     
+    // Velocity cmd subscribers
+    ros::Subscriber linear_vel_subs;
+    ros::Subscriber angular_vel_subs;
+    
+    // subscriber callbacks
+    void LinearVelCallback(const std_msgs::Float32::ConstPtr& msg);
+    void AngularVelCallback(const std_msgs::Float32::ConstPtr& msg);
     
     // Window Components
     std::vector<dfv::Slider> sliders;    
@@ -58,6 +68,8 @@ private:
     dfv::Button button_e3;
     dfv::Button button_e4;
     dfv::Button button_e5;
+    
+    int topic_wd;
     
 };
 
